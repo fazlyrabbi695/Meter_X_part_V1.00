@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meter-X-pert Assistant</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="chat-header-title">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="logo-text">
+                        <span class="logo-title">Meter-X-pert</span>
+                        <span class="logo-subtitle">Smart Metering Assistant</span>
+                    </div>
+                </div>
+            </div>
+            <div class="status-indicator">
+                <span class="status-dot"></span>
+                <span class="status-text">Online</span>
+            </div>
+            <div class="theme-toggle">
+                <button id="theme-toggle-btn">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+            <!-- Messages will be displayed here -->
+            <div class="typing-indicator" id="typing-indicator">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        <div class="chat-input-container">
+            <div class="chat-input-wrapper">
+                <input type="text" id="user-input" placeholder="Ask Meter-X-pert anything...">
+                <button id="send-button">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+            <div class="footer-text">
+                <small class="copyright">&copy; 2025 <a href="http://www.linkedin.com/in/fazly-rabbi-8411061a0" target="_blank" class="linkedin-link">Fazly Rabbi</a></small>
+                <small class="disclaimer">Meter-X-pert can make mistakes. Check important info.</small>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
