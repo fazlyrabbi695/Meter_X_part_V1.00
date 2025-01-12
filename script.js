@@ -594,7 +594,7 @@ class ChatBot {
             meter_03: {
                 patterns: [
                     'টাকা কিভাবে দেখে',
-                    'টাকা দেখে কিভাবে',
+		    'টাকা দেখে কিভাবে',
                     'How do you see money?',
                     'check meter balance',
                     'টাকা যোগ',
