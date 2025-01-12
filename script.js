@@ -444,28 +444,27 @@ class ChatBot {
     findMatchingPattern(userInput) {
         const input = userInput.toLowerCase().trim();
         
-        // First check exact matches
+        // First check for exact matches with meter_22 patterns (recharge problems)
+        if (this.responses.meter_22 && 
+            this.responses.meter_22.patterns.some(pattern => 
+                input === pattern || 
+                input.includes('রিচার্জ হচ্ছে না') || 
+                input.includes('রিচার্জ সমস্যা')
+            )) {
+            return this.getRandomReply('meter_22');
+        }
+        
+        // Then check other patterns
         for (const category in this.responses) {
+            if (category === 'meter_22') continue; // Skip meter_22 as it's already checked
+            
             const patterns = this.responses[category].patterns;
-            if (patterns && patterns.some(pattern => input === pattern.toLowerCase())) {
+            if (patterns && patterns.some(pattern => input === pattern || input.includes(pattern))) {
                 return this.getRandomReply(category);
             }
         }
         
-        // Then check partial matches
-        for (const category in this.responses) {
-            const patterns = this.responses[category].patterns;
-            if (patterns && patterns.some(pattern => input.includes(pattern.toLowerCase()))) {
-                return this.getRandomReply(category);
-            }
-        }
-        
-        // Check Bengali patterns
-        if (this.responses.bengali_patterns && 
-            this.responses.bengali_patterns.some(pattern => input.includes(pattern.toLowerCase()))) {
-            return this.getRandomReply('bengali_replies');
-        }
-        
+        // If no match found, return default response
         return this.getRandomReply('default');
     }
 
@@ -536,6 +535,31 @@ class ChatBot {
                               '<a href="https://dpdc.org.bd/site/service/myPrepaidToken_gov" target="_blank" style="color: #0066cc; text-decoration: none; padding: 5px 10px; border: 1px solid #0066cc; border-radius: 5px; display: inline-block; margin: 5px 0;">DPDC Token Check</a>\n\n' +
                               '3. DESCO (ডেসকো) এর জন্য:\n' +
                               '<a href="https://prepaid.desco.org.bd/customer/#/customer-login" target="_blank" style="color: #0066cc; text-decoration: none; padding: 5px 10px; border: 1px solid #0066cc; border-radius: 5px; display: inline-block; margin: 5px 0;">DESCO Token Check</a>',
+                        speak: true
+                    }
+                ]
+            },
+            meter_token_not_received: {
+                patterns: [
+                    'টোকেন আসে নাই',
+                    'টোকেন আসেনি',
+                    'টোকেন পাইনি',
+                    'টোকেন পাইনাই',
+                    'টোকেন আসছে না',
+                    'ম্যাসেজ পাইনি',
+                    'ম্যাসেজ আসেনি'
+                ],
+                replies: [
+                    {
+                        text: 'টোকেন না পাওয়ার কারণ ও করণীয়:\n\n' +
+                              '১. সার্ভার সমস্যার কারণে টোকেন আসতে দেরি হতে পারে\n' +
+                              '২. মোবাইল নম্বর ভুল থাকলে টোকেন আসবে না\n' +
+                              '৩. নেটওয়ার্ক সমস্যার কারণে টোকেন আসতে দেরি হতে পারে\n\n' +
+                              'করণীয়:\n' +
+                              '১. আপনার মোবাইল নম্বর সঠিক কিনা যাচাই করুন\n' +
+                              '২. টোকেন চেক করার লিংক থেকে টোকেন চেক করুন\n' +
+                              '৩. কিছুক্ষণ অপেক্ষা করুন\n' +
+                              '৪. এরপরও টোকেন না পেলে বিদ্যুৎ অফিসে যোগাযোগ করুন',
                         speak: true
                     }
                 ]
@@ -678,10 +702,12 @@ class ChatBot {
             },
             meter_11: {
                 patterns: [
-                    'recharge',
-                    'রিচার্জ',
+                    'recharge process',
+                    'রিচার্জ করার নিয়ম',
+                    'বিকাশে রিচার্জ',
                     'বিকাশ',
-                    'bKash', 
+                    'bKash recharge',
+                    'bKash'
                 ],
                 replies: [
                     'বিকাশ দিয়ে ডিজিটাল প্রিপেইড মিটারের টাকা রিচার্জ করার নিয়মঃ\n\n' +
@@ -776,7 +802,7 @@ class ChatBot {
                 ],
                 replies: [
                     'মিটার থেকে টাকা বেশি কাটার কারন সমুহঃ \n\n' +
-                    '১. বাসার ওয়ারিং এ সমস্যা থাকলে।\n\n' +
+                    '১.বাসার ওয়ারিং এ সমস্যা থাকলে।\n\n' +
                     "২| নিউট্রাল কমন থাকলে।\n" +
                     "৩| এই মিটার থেকে শুধু ফেইজ এবং অন্য কোন মিটার থাকে নিউট্রাল নিলে।\n" +
                     "৪| এই মিটারের নিউট্রাল অন্য কোন মিটারে ব্যাবহার হলে অথবা অন্য কোন মিটারের নিউট্রাল এই মিটারে ব্যাবহার করলে।\n" +
@@ -800,22 +826,39 @@ class ChatBot {
             },
             meter_21: {
                 patterns: [
-                    '',
-                    '',
-                    '', 
+                    'ডিমান্ড চার্জ',
+                    'ডিমান্ড চার্জ কত',
+                    'ডিমান্ড চার্জ কি',
+                    'Demand charge',
+                    'ডিমান্ড চার্জ কেন কাটে',
+                    'ডিমান্ড চার্জ কিভাবে কাটে'
                 ],
                 replies: [
-                    '',
+                    'ডিমান্ড চার্জ প্রতি মাসের  প্রথম রিচার্জে এক বার কাটবে এবং ভ্যাট প্রতি রিচার্জে রিচার্জ অ্যামাউন্ট এর উপর ভিত্তি করে 5% কেটে নিবে।  ডিমান্ড চার্জ  প্রতি কিলো ওয়াট 42 টাকা করে। মনে করি  আপনার অনুমোদিত লোড 2 কিলো ওয়াট। সুতরাং মোট ডিমান্ড চার্জ  2 X 42 = 84 টাকা (প্রতি মাসে এই পরিমাণ টাকা শুধু ডিমান্ড চার্জ বাবদ বিদ্যুৎ অফিস থেকে কেটে নিবে)এখন যেহেতু আপনি গত 3 মাস কোন  রিচার্জ করেন নাই এবং চলতি মাসের  এইটাই প্রথম রিচার্জ  সুতরাং মোট 4 মাসের  মোট ডিমান্ড চার্জ  84 X 4 = 336 টাকা',
                 ]
             },
             meter_22: {
                 patterns: [
-                    '',
-                    '',
-                    '', 
+                    'রিচার্জ সমস্যা',
+                    'রিচার্জ হচ্ছে না',
+                    'রিচার্জ'
                 ],
                 replies: [
-                    '',
+                    {
+                        text: 'প্রিপেইড_মিটারে_রিচার্জ_সমস্যা_এবং_সমাধান। সমস্যার_কারণঃ  \n\n' +
+                        '১.সার্ভারে সাময়িক সমস্যা হতে পারে।\n\n' +
+                        "২| পোস্ট পেইড মিটারের কোন বিল বকেয়া থাকতে পারে।\n" +
+                        "৩| এমিটার নাম্বার/কাস্টমার নাম্বার বা মোবাইল নাম্বার ভুল হতে পারে।\n" +
+                        "৪| টাকার পরিমাণ কম দিচ্ছেন হতে পারে।\n" +
+                        'সমাধান\n' +
+                        "১| বিকল্প উপায়ে বিকাশ/নগদ/রকেট/দোকান/ব্যাংক/কার্ড থেকে রিচার্জ করে দেখতে পারেন।\n" +
+                        "২| পোস্ট পেইড সিলেক্ট করে বকেয়া থাকলে তা পরিশোধ করে আপনার বিদ্যুৎ অফিসে জানান।\n" +
+                        "৩| মিটার নাম্বার/কাস্টমার নাম্বার বা মোবাইল নাম্বার সঠিক করে দিন।(বিদ্যুৎ কল সেন্টার)\n" +
+                        "৪| টাকার পরিমাণ বাড়িয়ে দেখুন। প্রতিমাসে রিচার্জ না করলে মিটার ভাড়া এবং ডিমান্ড চার্জ বকেয়া থেকে যায় যা এখন কেটে নিবে।\n" + 
+                        "৫| কিছু সময় পরে রিচার্জ করে দেখতে পারেন। বিপিডিবি তে একবার রিচার্জের ৩ ঘন্টা পর রিচার্জ করতে হয়।\n" +
+                        "৬| এরপরেও সমাধান না হলে  বিদ্যুৎ অফিসে যোগাযোগ করুন ।\n",
+                        speak: true
+                    }
                 ]
             },
             meter_23: {
@@ -1205,21 +1248,17 @@ class ChatBot {
         }
 
         if (command === '#save') {
-            localStorage.setItem('customResponses', JSON.stringify(this.customResponses));
-            this.responses = {
-                ...this.getDefaultResponses(),
-                ...this.customResponses
-            };
-            this.trainingCategory = '';
-            return "Training saved! The bot now knows these new patterns and responses.";
+            this.saveTraining();
         }
-
-        if (command === '#cancel') {
-            this.trainingCategory = '';
-            return "Training cancelled. No changes were saved.";
+        else if (command === '#cancel') {
+            this.cancelTraining();
         }
-
-        return null;
+        else if (command === '#export') {
+            this.exportTrainingData();
+        }
+        else {
+            return null;
+        }
     }
 
     exportTrainingData() {
