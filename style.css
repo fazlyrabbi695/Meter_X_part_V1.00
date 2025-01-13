@@ -456,6 +456,26 @@ body {
     gap: 10px;
 }
 
+.upload-btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.upload-btn:hover {
+    background-color: #45a049;
+}
+
+.upload-btn:active {
+    background-color: #3d8b40;
+}
+
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
     width: 8px;

@@ -1,3 +1,6 @@
+// Default Excel Data - Auto-generated from last upload
+const DEFAULT_EXCEL_DATA = [];
+
 // Google Sheets API configuration
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxyyUx90A_HdJZnapWSRSf6iegqTCEOci7ToogYBEk09MIRa96ONHftFAzc_Xezh-bGdg/exec'; // Add your Google Apps Script URL here
 
@@ -9,96 +12,200 @@ class ChatBot {
         this.typingIndicator = document.getElementById('typing-indicator');
         this.themeToggleBtn = document.getElementById('theme-toggle-btn');
         
-        // OpenAI API Key - Replace with your key
-        this.OPENAI_API_KEY = 'sk-';
+        // Create file input and upload button
+        this.fileInput = document.createElement('input');
+        this.fileInput.type = 'file';
+        this.fileInput.accept = '.xlsx, .xls';
+        this.fileInput.style.display = 'none';
         
-        // Hugging Face API Key (free to get)
-        this.HF_API_KEY = 'hf_'; // Add your Hugging Face API key here
+        this.uploadButton = document.createElement('button');
+        this.uploadButton.textContent = 'Excel';
+        this.uploadButton.className = 'upload-btn';
+        this.uploadButton.title = 'Upload Excel File (Login required)';
+        this.uploadButton.disabled = true; // Disabled by default until login
+        this.uploadButton.onclick = () => this.fileInput.click();
         
-        // Rate limiting
-        this.lastRequestTime = 0;
-        this.minRequestInterval = 2000; // Minimum 2 seconds between requests
+        // Add upload button to header right section
+        const headerRight = document.querySelector('.chat-header-right');
+        const themeButton = document.querySelector('#theme-toggle-btn');
+        if (headerRight && themeButton) {
+            headerRight.insertBefore(this.uploadButton, themeButton);
+        }
+        document.body.appendChild(this.fileInput);
         
-        // Initialize speech synthesis
-        this.speechSynthesis = window.speechSynthesis;
-        this.speaking = false;
-
-        // Enhanced fallback responses
-        this.fallbackResponses = {
-            general: [
-                "I understand you're asking about energy meters. Could you be more specific about what you'd like to know?",
-                "That's an interesting question about metering. Would you like to know about reading meters, billing, or energy saving?",
-                "I can help you with meter readings, billing queries, and energy consumption. Which aspect interests you?",
-                "Let me assist you with your meter-related question. Are you asking about readings, billing, or technical issues?"
-            ],
-            technical: [
-                "For technical questions, I recommend checking your meter's display first. Would you like guidance on reading specific meter codes?",
-                "Technical meter issues can be complex. Let's start with the basics - what exactly are you seeing on your meter?",
-                "I can help with common technical problems. Is your meter showing any error codes or unusual readings?"
-            ],
-            consumption: [
-                "Understanding energy consumption is important. Would you like to know how to track your usage?",
-                "I can help you understand your energy usage patterns. Shall we look at basic meter reading techniques first?",
-                "Energy consumption varies by household. Would you like tips on monitoring and reducing your usage?"
-            ],
-            billing: [
-                "Billing questions are common. Would you like to know about reading your bill or understanding charges?",
-                "I can explain different aspects of your energy bill. What specific part would you like to understand?",
-                "Let's break down your billing query. Are you interested in payment methods, charges, or reading your bill?"
-            ]
-        };
+        // Initialize other components
+        this.chatContainer = document.querySelector('.chat-container');
+        this.userInput = document.querySelector('#user-input');
+        this.sendButton = document.querySelector('#send-button');
         
-        // Training mode flags and security
+        // Training mode variables
         this.isTrainingMode = false;
-        this.currentCategory = null;
-        this.tempTrainingData = {
-            patterns: [],
-            replies: []
-        };
-        
-        // Training mode security
         this.isAuthenticated = false;
-        this.trainingPassword = 'nm786'; // Change this to your desired password
-        this.loginAttempts = 0;
-        this.maxLoginAttempts = 3;
-        this.lastLoginAttempt = 0;
-        this.lockoutDuration = 30 * 60 * 1000; // 30 minutes in milliseconds
+        this.trainingPassword = '865'; // Password for both training and Excel upload
         
-        // Load training data from localStorage
-        this.customResponses = JSON.parse(localStorage.getItem('customResponses')) || {};
-        
-        // Load saved responses from localStorage
-        const savedResponses = localStorage.getItem('customResponses');
-        this.customResponses = savedResponses ? JSON.parse(savedResponses) : {};
-        
-        // Merge custom responses with default responses
-        this.responses = {
-            ...this.getDefaultResponses(),
-            ...this.customResponses,
-            training: {
-                patterns: ['#train', '#learning', '#teach'],
-                replies: [
-                    "Please enter the training mode password using: #login your_password"
-                ]
-            }
-        };
+        // Excel data storage - load from excel_data.js if available
+        this.excelData = typeof EXCEL_DATA !== 'undefined' ? EXCEL_DATA : null;
         
         this.initializeEventListeners();
-        
-        // Add welcome messages with typing effect
         this.showWelcomeMessage();
+        
     }
 
     // Initialize all event listeners
     initializeEventListeners() {
-        this.sendButton.addEventListener('click', () => this.sendMessage());
+        this.sendButton.addEventListener('click', () => this.handleUserInput());
         this.userInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                this.sendMessage();
-            }
+            if (e.key === 'Enter') this.handleUserInput();
         });
         this.themeToggleBtn.addEventListener('click', () => this.toggleTheme());
-        this.initializeTheme();
+        
+        // Add Excel file input listener
+        this.fileInput.addEventListener('change', (e) => {
+            if (!this.isAuthenticated) {
+                this.addBotMessage({
+                    text: "Please login first with: #login 865",
+                    speak: false
+                });
+                this.fileInput.value = ''; // Clear the file input
+                return;
+            }
+            this.handleExcelFile(e);
+        });
+    }
+
+    // Handle Excel file upload
+    async handleExcelFile(event) {
+        if (!this.isAuthenticated) {
+            this.addBotMessage({
+                text: "Please login first with: #login 865",
+                speak: false
+            });
+            this.fileInput.value = ''; // Clear the file input
+            return;
+        }
+
+        const file = event.target.files[0];
+        if (!file) return;
+
+        try {
+            const data = await this.readExcelFile(file);
+            console.log('Loaded Excel data:', data); // Debug log
+            
+            if (data && data.length > 0) {
+                // Store data in memory
+                this.excelData = data;
+                
+                // Save to excel_data.js and localStorage
+                await this.saveExcelDataToScript(data);
+                
+                this.addBotMessage({
+                    text: `Excel file uploaded successfully! Found ${data.length} entries.\n\nℹ️ Check your Downloads folder for the updated 'excel_data.js' file.`,
+                    speak: false
+                });
+            } else {
+                this.addBotMessage({
+                    text: "The Excel file appears to be empty. Please make sure it contains data in the correct format.",
+                    speak: false
+                });
+            }
+        } catch (error) {
+            console.error('Error reading Excel file:', error);
+            this.addBotMessage({
+                text: "Error reading Excel file. Please ensure it's in the correct format with columns: Question, Response, Category, Keywords",
+                speak: false
+            });
+        }
+        
+        // Clear the file input for next upload
+        this.fileInput.value = '';
+    }
+
+    // Read Excel file using SheetJS
+    async readExcelFile(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const sheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[sheetName];
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                    console.log('Parsed Excel data:', jsonData); // Debug log
+                    resolve(jsonData);
+                } catch (error) {
+                    console.error('Excel parsing error:', error);
+                    reject(error);
+                }
+            };
+            reader.onerror = reject;
+            reader.readAsArrayBuffer(file);
+        });
+    }
+
+    // Load Excel data from localStorage
+    loadExcelDataFromStorage() {
+        const savedData = localStorage.getItem('excelData');
+        return savedData ? JSON.parse(savedData) : null;
+    }
+
+    // Save Excel data to localStorage
+    saveExcelDataToStorage(data) {
+        localStorage.setItem('excelData', JSON.stringify(data));
+    }
+
+    // Save Excel data to excel_data.js
+    async saveExcelDataToScript(data) {
+        try {
+            // Format the data as a JavaScript constant
+            const dataString = JSON.stringify(data, null, 2);
+            const scriptContent = `// Excel Data Storage - Auto-generated from uploads
+const EXCEL_DATA = ${dataString};
+
+// Function to update Excel data
+function updateExcelData(newData) {
+    EXCEL_DATA.length = 0; // Clear existing data
+    EXCEL_DATA.push(...newData); // Add new data
+    return EXCEL_DATA;
+}
+
+// Function to get Excel data
+function getExcelData() {
+    return EXCEL_DATA;
+}`;
+
+            // Create a temporary link to download the updated script
+            const blob = new Blob([scriptContent], { type: 'text/javascript' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'excel_data.js';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+
+            // Show success message
+            this.addBotMessage({
+                text: "✅ Excel data has been saved! Please:\n1. Find 'excel_data.js' in your Downloads folder\n2. Replace your current excel_data.js file with it\n3. Refresh the page to use the new data",
+                speak: false
+            });
+
+            // Update the data in memory
+            if (typeof updateExcelData === 'function') {
+                updateExcelData(data);
+            }
+
+            // Save to localStorage as backup
+            this.saveExcelDataToStorage(data);
+            
+        } catch (error) {
+            console.error('Error saving Excel data:', error);
+            this.addBotMessage({
+                text: "❌ Error saving Excel data. Please try again.",
+                speak: false
+            });
+        }
     }
 
     sendMessage() {
@@ -237,42 +344,20 @@ class ChatBot {
     }
 
     handleTrainingLogin(password) {
-        // Check if user is in lockout period
-        if (this.isInLockout()) {
-            const remainingTime = Math.ceil((this.lastLoginAttempt + this.lockoutDuration - Date.now()) / 60000);
-            this.addBotMessage({
-                text: `Too many failed attempts. Please try again in ${remainingTime} minutes.`,
-                speak: false
-            });
-            return;
-        }
-
         if (password === this.trainingPassword) {
             this.isAuthenticated = true;
-            this.loginAttempts = 0;
+            this.uploadButton.disabled = false; // Enable upload button after login
             this.addBotMessage({
-                text: "Login successful! You can now use training commands.",
+                text: "✅ Login successful!\nYou can now:\n1. Upload Excel files\n2. Use #train to enter training mode\n3. Use #export to export training data",
                 speak: false
             });
-            if (this.isTrainingMode) {
-                this.startTrainingMode();
-            }
         } else {
-            this.loginAttempts++;
-            this.lastLoginAttempt = Date.now();
-            const remainingAttempts = this.maxLoginAttempts - this.loginAttempts;
-            
-            if (remainingAttempts > 0) {
-                this.addBotMessage({
-                    text: `Invalid password. ${remainingAttempts} attempts remaining.`,
-                    speak: false
-                });
-            } else {
-                this.addBotMessage({
-                    text: "Too many failed attempts. Please try again in 30 minutes.",
-                    speak: false
-                });
-            }
+            this.isAuthenticated = false;
+            this.uploadButton.disabled = true; // Keep upload button disabled
+            this.addBotMessage({
+                text: "❌ Invalid password. Please try again.",
+                speak: false
+            });
         }
     }
 
@@ -687,7 +772,7 @@ class ChatBot {
                     'relay code', 
                 ],
                 replies: [
-                    'মিটারে ৮৬৮ প্রেস করে লাল বাটন / নীল বাটনে চাপ দিন । (বিঃদ্রঃ কিছু মিটারের ইন্টার বাটন লাল আবার কিছু কিছু মিটারের ইন্টার বাটন নীল।)',
+                    'মিটারে ৮৬৮ প্রেস করে লাল বাটনে চাপ দিন । (বিঃদ্রঃ কিছু মিটারের ইন্টার বাটন লাল আবার কিছু কিছু মিটারের ইন্টার বাটন নীল।)',
                 ]
             },
             meter_10: {
@@ -846,17 +931,17 @@ class ChatBot {
                 replies: [
                     {
                         text: 'প্রিপেইড_মিটারে_রিচার্জ_সমস্যা_এবং_সমাধান। সমস্যার_কারণঃ  \n\n' +
-                        '১.সার্ভারে সাময়িক সমস্যা হতে পারে।\n\n' +
-                        "২| পোস্ট পেইড মিটারের কোন বিল বকেয়া থাকতে পারে।\n" +
-                        "৩| এমিটার নাম্বার/কাস্টমার নাম্বার বা মোবাইল নাম্বার ভুল হতে পারে।\n" +
-                        "৪| টাকার পরিমাণ কম দিচ্ছেন হতে পারে।\n" +
-                        'সমাধান\n' +
-                        "১| বিকল্প উপায়ে বিকাশ/নগদ/রকেট/দোকান/ব্যাংক/কার্ড থেকে রিচার্জ করে দেখতে পারেন।\n" +
-                        "২| পোস্ট পেইড সিলেক্ট করে বকেয়া থাকলে তা পরিশোধ করে আপনার বিদ্যুৎ অফিসে জানান।\n" +
-                        "৩| মিটার নাম্বার/কাস্টমার নাম্বার বা মোবাইল নাম্বার সঠিক করে দিন।(বিদ্যুৎ কল সেন্টার)\n" +
-                        "৪| টাকার পরিমাণ বাড়িয়ে দেখুন। প্রতিমাসে রিচার্জ না করলে মিটার ভাড়া এবং ডিমান্ড চার্জ বকেয়া থেকে যায় যা এখন কেটে নিবে।\n" + 
-                        "৫| কিছু সময় পরে রিচার্জ করে দেখতে পারেন। বিপিডিবি তে একবার রিচার্জের ৩ ঘন্টা পর রিচার্জ করতে হয়।\n" +
-                        "৬| এরপরেও সমাধান না হলে  বিদ্যুৎ অফিসে যোগাযোগ করুন ।\n",
+                              '১.সার্ভারে সাময়িক সমস্যা হতে পারে।\n\n' +
+                              "২| পোস্ট পেইড মিটারের কোন বিল বকেয়া থাকতে পারে।\n" +
+                              "৩| এমিটার নাম্বার/কাস্টমার নাম্বার বা মোবাইল নাম্বার ভুল হতে পারে।\n" +
+                              "৪| টাকার পরিমাণ কম দিচ্ছেন হতে পারে।\n" +
+                              'সমাধান\n' +
+                              "১| বিকল্প উপায়ে বিকাশ/নগদ/রকেট/দোকান/ব্যাংক/কার্ড থেকে রিচার্জ করে দেখতে পারেন।\n" +
+                              "২| পোস্ট পেইড সিলেক্ট করে বকেয়া থাকলে তা পরিশোধ করে আপনার বিদ্যুৎ অফিসে জানান।\n" +
+                              "৩| মিটার নাম্বার/কাস্টমার নাম্বার বা মোবাইল নাম্বার সঠিক করে দিন।(বিদ্যুৎ কল সেন্টার)\n" +
+                              "৪| টাকার পরিমাণ বাড়িয়ে দেখুন। প্রতিমাসে রিচার্জ না করলে মিটার ভাড়া এবং ডিমান্ড চার্জ বকেয়া থেকে যায় যা এখন কেটে নিবে।\n" + 
+                              "৫| কিছু সময় পরে রিচার্জ করে দেখতে পারেন। বিপিডিবি তে একবার রিচার্জের ৩ ঘন্টা পর রিচার্জ করতে হয়।\n" +
+                              "৬| এরপরেও সমাধান না হলে  বিদ্যুৎ অফিসে যোগাযোগ করুন ।\n",
                         speak: true
                     }
                 ]
@@ -1354,17 +1439,17 @@ class ChatBot {
         this.speechSynthesis.speak(utterance);
     }
 
-    generateBotResponse(userInput) {
+    generateBotResponse(message) {
         let response;
 
         // First check for training mode commands
-        if (userInput.toLowerCase() === '#train' || userInput.toLowerCase() === '#teach') {
+        if (message.toLowerCase() === '#train' || message.toLowerCase() === '#teach') {
             this.handleTrainingRequest();
             return;
         }
 
-        if (userInput.toLowerCase().startsWith('#login ')) {
-            this.handleTrainingLogin(userInput.slice(7));
+        if (message.toLowerCase().startsWith('#login ')) {
+            this.handleTrainingLogin(message.slice(7));
             return;
         }
 
@@ -1375,7 +1460,7 @@ class ChatBot {
         for (const category in this.customResponses) {
             const patterns = this.customResponses[category].patterns;
             if (patterns && patterns.some(pattern => 
-                userInput.toLowerCase().includes(pattern.toLowerCase()) || 
+                message.toLowerCase().includes(pattern.toLowerCase()) || 
                 pattern === '*'
             )) {
                 response = this.getRandomReply(this.customResponses[category].replies);
@@ -1393,7 +1478,7 @@ class ChatBot {
             // Only check if patterns exist and are not empty
             if (patterns && patterns.length > 0 && patterns[0] !== '') {
                 if (patterns.some(pattern => 
-                    userInput.toLowerCase().includes(pattern.toLowerCase()) || 
+                    message.toLowerCase().includes(pattern.toLowerCase()) || 
                     pattern === '*'
                 )) {
                     response = this.getRandomReply(responses[category].replies);
@@ -1410,8 +1495,14 @@ class ChatBot {
             return;
         }
 
-        // Fallback if no default response is configured
-        this.addBotMessage("দুঃখিত, আমি আপনার প্রশ্নটি বুঝতে পারছি না। অনুগ্রহ করে আরও স্পষ্টভাবে জিজ্ঞাসা করুন।");
+        // Fallback response
+        this.addBotMessage("আমি আপনার প্রশ্নের উত্তর খুঁজে পাচ্ছি না। নিম্নলিখিত বিষয়গুলো সম্পর্কে জিজ্ঞাসা করুন:\n" +
+               "১. মিটার রিডিং\n" +
+               "২. টোকেন সংক্রান্ত\n" +
+               "৩. মিটার এরর কোড\n" +
+               "৪. বাইপাস সমস্যা\n" +
+               "৫. টার্মিনাল কভার\n" +
+               "৬. অন্যান্য কারিগরি সমস্যা");
     }
 
     getRandomReply(replies) {
@@ -1436,6 +1527,121 @@ class ChatBot {
 
         // If no custom response found, proceed with default responses
         this.generateBotResponse(message);
+    }
+
+    // Enhanced message processing with Excel data
+    async processMessage(userMessage) {
+        if (!this.excelData) {
+            if (userMessage.toLowerCase().includes('excel') || userMessage.toLowerCase().includes('data')) {
+                return "Please upload an Excel file first using the 'Upload Excel' button.";
+            }
+            return this.processMessageWithoutExcel(userMessage);
+        }
+
+        // Process message with Excel data context
+        const excelContext = `Available Excel data: ${JSON.stringify(this.excelData.slice(0, 5))}... (${this.excelData.length} rows total)`;
+        const prompt = `Given this Excel data context: ${excelContext}\n\nUser question: ${userMessage}\n\nAnswer:`;
+        
+        return this.processMessageWithExcel(userMessage, this.excelData);
+    }
+
+    // Process messages specifically related to Excel data
+    processMessageWithExcel(message, data) {
+        console.log('Processing message:', message); // Debug log
+        console.log('Available data:', data); // Debug log
+        
+        const userQuestion = message.toLowerCase().trim();
+        
+        // If message is too short or unclear
+        if (userQuestion.length < 2) {
+            return "আনুগ্রহ করে মিটার বিষয়ক প্রশ্ন করুন।";
+        }
+        
+        // Search through Excel data for matching questions or keywords
+        for (const row of data) {
+            // Debug logs
+            console.log('Checking row:', row);
+            console.log('Question:', row.Question);
+            console.log('Keywords:', row.Keywords);
+            
+            if (!row.Question || !row.Response) continue;
+            
+            const question = row.Question.toLowerCase();
+            const keywords = (row.Keywords || '').toLowerCase().split(',').map(k => k.trim());
+            
+            // Log matching attempt
+            console.log('Comparing:', {
+                userQuestion,
+                question,
+                keywords
+            });
+            
+            // Check for exact match first
+            if (userQuestion === question) {
+                console.log('Exact match found!');
+                return row.Response;
+            }
+            
+            // Check if user question contains the full question
+            if (userQuestion.includes(question)) {
+                console.log('Question inclusion match found!');
+                return row.Response;
+            }
+            
+            // Check keywords
+            for (const keyword of keywords) {
+                if (keyword && userQuestion.includes(keyword)) {
+                    console.log('Keyword match found:', keyword);
+                    return row.Response;
+                }
+            }
+        }
+        
+        // Random selection between two fallback messages
+        return Math.random() < 0.5 
+            ? "আনুগ্রহ করে মিটার বিষয়ক প্রশ্ন করুন।"
+            : "দুঃখিত, আপনার প্রশ্নের উত্তর টি আমার জানা নাই। আশাকরি, খুব শীগ্রই আপনার এই প্রশ্নের উত্তর আমি আপনাকে জানাতে সক্ষম হবো।";
+    }
+
+    handleUserInput() {
+        const message = this.userInput.value.trim();
+        if (!message) return;
+
+        // Clear input
+        this.userInput.value = '';
+
+        // Add user message
+        this.addUserMessage(message);
+        this.saveToGoogleSheets('User', message);
+
+        // Handle training mode or normal response
+        if (message.toLowerCase() === '#train' || message.toLowerCase() === '#teach') {
+            this.handleTrainingRequest();
+        } else if (message.toLowerCase().startsWith('#login ')) {
+            this.handleTrainingLogin(message.slice(7));
+        } else if (message.toLowerCase() === '#export' && this.isAuthenticated) {
+            this.exportTrainingData();
+        } else if (this.isTrainingMode && this.isAuthenticated) {
+            this.handleTrainingInput(message);
+        } else if (this.isTrainingMode && !this.isAuthenticated) {
+            this.addBotMessage({
+                text: "Please login first with: #login your_password",
+                speak: false
+            });
+        } else {
+            // Check if Excel data is available
+            if (this.excelData) {
+                // Use Excel data processing
+                const response = this.processMessageWithExcel(message, this.excelData);
+                this.addBotMessage({
+                    text: response,
+                    speak: true
+                });
+            } else {
+                // Fall back to default response system
+                this.generateBotResponse(message);
+            }
+        }
     }
 
     showWelcomeMessage() {

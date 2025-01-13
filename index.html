@@ -6,11 +6,92 @@
     <title>Meter-X-pert Assistant</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
+    <style>
+        /* Existing styles */
+        
+        .settings-container {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+        
+        .upload-btn {
+            background: none;
+            color: #333;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-left: 10px;
+        }
+        
+        .upload-btn:before {
+            content: "📁";
+            font-size: 16px;
+        }
+        
+        .upload-btn:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        
+        .upload-btn:disabled {
+            color: #999;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        .upload-btn:disabled:hover {
+            background: none;
+        }
+
+        /* Dark theme support */
+        .dark-theme .upload-btn {
+            color: #fff;
+        }
+        
+        .dark-theme .upload-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .dark-theme .upload-btn:disabled {
+            color: #666;
+        }
+        
+        .chat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .chat-header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .chat-header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
 </head>
 <body>
     <div class="chat-container">
         <div class="chat-header">
-            <div class="chat-header-title">
+            <div class="chat-header-left">
                 <div class="logo">
                     <div class="logo-icon">
                         <i class="fas fa-bolt"></i>
@@ -21,12 +102,13 @@
                     </div>
                 </div>
             </div>
-            <div class="status-indicator">
-                <span class="status-dot"></span>
-                <span class="status-text">Online</span>
-            </div>
-            <div class="theme-toggle">
-                <button id="theme-toggle-btn">
+            <div class="chat-header-right">
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Online</span>
+                </div>
+                <!-- Upload button will be added here by JavaScript -->
+                <button id="theme-toggle-btn" onclick="toggleTheme()">
                     <i class="fas fa-moon"></i>
                 </button>
             </div>
@@ -52,6 +134,8 @@
             </div>
         </div>
     </div>
+    <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
+    <script src="excel_data.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
