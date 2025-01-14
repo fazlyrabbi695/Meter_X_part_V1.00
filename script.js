@@ -1645,12 +1645,6 @@ function getExcelData() {
     }
 
     showWelcomeMessage() {
-        // Show company logo/name
-        this.addBotMessage({
-            text: "মিটার-এক্স-পার্ট | METER-X-PERT",
-            speak: false
-        });
-
         // Add typing indicator
         this.showTypingIndicator();
         
@@ -1661,17 +1655,8 @@ function getExcelData() {
                 text: "স্বাগতম! আমি মিটার এক্সপার্ট, আপনার ইলেকট্রিক মিটার সহায়ক। মিটারের যে কোন সমস্যা আমাকে লিখে জানান । আমি আপনাকে সমাধান টা জানানোর চেষ্টা করবো।",
                 speak: true
             });
-
-            // Wait for 1 second
-            setTimeout(() => {
-                // Show English welcome
-                this.addBotMessage({
-                    text: "Welcome! I'm Meter Expert, your electric meter assistant. Please let me know about any meter issues you have, and I'll try my best to help you find a solution.",
-                    speak: true
-                });
-                
-                this.hideTypingIndicator();
-            }, 1000);
+            
+            this.hideTypingIndicator();
         }, 1000);
     }
 }
