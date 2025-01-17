@@ -306,8 +306,9 @@ const EXCEL_DATA = [
     "Keywords": "বানিজ্যিক নাকি আবাসিক,বানিজ্যিক,আবাসিক"
   },
   {
-    "Question": "মিটারের কিলোওয়াট 2 থেকে 6 করেছিলাম প্রায় ৮ \nমাস আগে। এখন 6 কিলোওয়াট থেকে 4 কিলোওয়াট করতে চাচ্ছি। \nএটা করতে গেলে কি চার্জ/জামানত লাগবে?",
+    "Question": "মিটারের কিলোওয়াট বাড়াতে গেলে কি চার্জ/জামানত লাগবে?",
     "Response": "অনুমোদিত লোড কমালে জামানত লাগে না বাড়ালে লাগে, কমালে শুধু আবেদন ফি আর চুক্তি পরিবর্তন ফি লাগতে পারে।বিস্তারিত জানতে বিদ্যুৎ অফিসে যোগাযোগ করুন।",
+    "Category": "মিটারের কিলোওয়াট বাড়াতে গেলে কি চার্জ/জামানত লাগবে?",
     "Keywords": "লোড কমালে,লোড বাড়ালে,কি কাগজ,কি লাগে,কিলো কমালে, কিলো বাড়ালে"
   },
   {
@@ -357,6 +358,18 @@ const EXCEL_DATA = [
     "Response": "যদি মিটারে ৮৮৬ দেয়ার পরে ট্যারিফ ০ টাকা দেখায় তাহলে  আপনার নিকটস্থ বিদ্যুৎ অফিসে যোগাযোগ করুন।",
     "Category": "ট্যারিফ ০ দেখলে করণীয়  কি",
     "Keywords": "ট্যারিফ ০, রেট , মিটার টাকা কাটে না,মিটারে টাকা কাটে না,মিটার থেকে টাকা কাটে না"
+  },
+  {
+    "Question": "মিটার এ শেষ কত রিচার্জ হয়েছে তা জানাবো কিভাবে",
+    "Response": "মিটারে ৮৩০ প্রেস করে লাল বাটন / নীল বাটনে চাপ দিন তাহলে মিটারের ডিসপ্লে তে দেখতে পারবেন এই মিটারে সর্বশেষ কত টাকা রিচার্জ করা হয়েছে।",
+    "Category": "মিটার এ শেষ কত রিচার্জ হয়েছে তা জানাবো কিভাবে",
+    "Keywords": "শেষ কত রিচার্জ, লাস্ট রিচার্জ,৮৩০,শেষ রিচার্জ,লাস্ট কত রিচার্জ,last recharge"
+  },
+  {
+    "Question": "মিটার এর কোড সমূহ",
+    "Response": "উজার ম্যানুয়াল এর  লিংক সমূহ: \n                              1. Hexing এর জন্য:\n                              <a href=\"https://drive.google.com/file/d/1ZG5cxfADTPKuUlKQBkcMdXiNvuPwFq5t/view?usp=sharing\" target=\"_blank\" style=\"color: #0066cc; text-decoration: none; padding: 5px 10px; border: 1px solid #0066cc; border-radius: 5px; display: inline-block; margin: 5px 0;\">Hexing</a>\n                              2. Northern এর জন্য:\n                              <a href=\"https://drive.google.com/file/d/1Exzwv7E_Mii1yQ_5nOO8mTkYi5EhjcTh/view?usp=sharing\" target=\"_blank\" style=\"color: #0066cc; text-decoration: none; padding: 5px 10px; border: 1px solid #0066cc; border-radius: 5px; display: inline-block; margin: 5px 0;\">Northern</a>\n                              3. Cell এর জন্য:\n                              <a href=\"https://drive.google.com/file/d/1wIBYPxkH3K4ofYiQEDE8NffjADb725q-/view?usp=sharing\" target=\"_blank\" style=\"color: #0066cc; text-decoration: none; padding: 5px 10px; border: 1px solid #0066cc; border-radius: 5px; display: inline-block; margin: 5px 0;\">Cell</a>\n\t\t\t      4. JFJ এর জন্য:\n                              <a href=\"https://drive.google.com/file/d/1QnMcyhgvzdOIScFx9YNaxkfuumIGg8RK/view?usp=sharing\" target=\"_blank\" style=\"color: #0066cc; text-decoration: none; padding: 5px 10px; border: 1px solid #0066cc; border-radius: 5px; display: inline-block; margin: 5px 0;\">JFJ</a>\n\t\t\t      5. Eastern এর জন্য:\n                              <a href=\"https://drive.google.com/file/d/1AaI6C-ixQTHPWwcAH5FloO-Sx7A-nt6R/view?usp=sharing\" target=\"_blank\" style=\"color: #0066cc; text-decoration: none; padding: 5px 10px; border: 1px solid #0066cc; border-radius: 5px; display: inline-block; margin: 5px 0;\">Eastern</a>\n\t\t\t      6. FGF এর জন্য:\n                              <a href=\"https://drive.google.com/file/d/1tVY60AVVPHq2mHaB10V_O6-xa6KeNZVz/view?usp=sharing\" target=\"_blank\" style=\"color: #0066cc; text-decoration: none; padding: 5px 10px; border: 1px solid #0066cc; border-radius: 5px; display: inline-block; margin: 5px 0;\">Eastern</a>\n\t\t\t      7. Inhe এর জন্য:\n                              <a href=\"https://drive.google.com/file/d/1p6dctNV8U9CzvDd9gEuXMh5jbO1RoUPo/view?usp=sharing\" target=\"_blank\" style=\"color: #0066cc; text-decoration: none; padding: 5px 10px; border: 1px solid #0066cc; border-radius: 5px; display: inline-block; margin: 5px 0;\">Inhe</a>\n\t\t\t      8. Wasion এর জন্য:\n                              <a href=\"https://drive.google.com/file/d/1xhEnlPxiAx_LYUOQJMQXubsXnR5wDiCY/view?usp=sharing\" target=\"_blank\" style=\"color: #0066cc; text-decoration: none; padding: 5px 10px; border: 1px solid #0066cc; border-radius: 5px; display: inline-block; margin: 5px 0;\">Wasion</a>",
+    "Category": "মিটার এর কোড সমূহ",
+    "Keywords": "ম্যানুয়াল,manual,code,কোড"
   },
   {
     "Keywords": " "
