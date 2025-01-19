@@ -94,7 +94,7 @@ const EXCEL_DATA = [
     "Question": "একটিভ কোড",
     "Response": "মিটারে 865 প্রেস করে লাল বাটনে চাপ দিয়ে একটিভ করতে হবে। (বিঃদ্রঃ মিটার টি একটিভ করার আগে অবশ্যই মিটারের টারমিনাল কভার টি ভালো মতো লাগিয়ে নিবেন তা না হলে মিটারটি লক্ হতে পারে।)",
     "Category": "একটিভ কোড ",
-    "Keywords": "এক্টিভ,একটিভ,active,Od"
+    "Keywords": "এক্টিভ,একটিভ,active,Od, ওডি,ও ডি"
   },
   {
     "Question": "Meter-X-pert",
@@ -148,7 +148,7 @@ const EXCEL_DATA = [
     "Question": "Lo-bAt",
     "Response": "মিটার টির ব্যাটারী চেঞ্জ করতে হবে।",
     "Category": "Lo-bAt",
-    "Keywords": " bAt,Lo-bAt,A1,Ob,0b,bAt-oPEn,ব্যাটারি,battery,ব্যাটারী "
+    "Keywords": " bAt,Lo-bAt,A1,Ob,0b,bAt-oPEn,ব্যাটারি,battery,ব্যাটারী,ওবি,ও বি"
   },
   {
     "Question": "রিচার্জ করার নিয়ম",
@@ -226,7 +226,7 @@ const EXCEL_DATA = [
     "Question": "closed",
     "Response": "তারমানে মিটারের রিলে সংযোগ কানেক্ট আছে। সুতরাং আপনার বাসায় বিদ্যুৎ সংযোগ পাবেন।",
     "Category": "closed",
-    "Keywords": "ক্লোজড,Closed,CLoSEd,normal"
+    "Keywords": "ক্লোজড,Closed,CLoSEd,normal,10"
   },
   {
     "Question": "no credit",
@@ -382,6 +382,12 @@ const EXCEL_DATA = [
     "Response": "ওয়া-আলাইকুমুস সালাম ওয়া-রহমাতুল্লাহি ওয়া বারাকাতুহু",
     "Category": "আসসালামু আলাইকুম",
     "Keywords": "আলাইকুম"
+  },
+  {
+    "Question": "ভোল্টেজ চেক করব কিভাবে",
+    "Response": "মিটারের ইনকামিং ভোল্টেজ চেক করতে মিটারে ৮৭০ তুলে  লাল বাটন / নীল বাটনে চাপ দিন তাহলে মিটারের ডিসপ্লে তে মিটারের ইনকামিং ভোল্টেজ দেখতে পারবেন।",
+    "Category": "ভোল্টেজ চেক করব কিভাবে",
+    "Keywords": "ভোল্টেজ চেক, ইনকামিং ভোল্টেজ,৮৭০,voltage check"
   }
 ];
 
